@@ -5,14 +5,17 @@ RESP = <<TEXT
 HTTP/1.1 200 OK
 Content-Type: text/plain
 
-Hello World!
+Hello Again World!
 TEXT
 
 server = TCPServer.new 4321
 loop do
   client = server.accept
-  puts "Got a connection!"
-  puts client.gets.inspect
+  loop do
+    line = client.gets
+    puts line
+    break if line.strip == ""
+  end
   client.write RESP
   client.close
 end

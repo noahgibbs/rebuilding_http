@@ -79,7 +79,7 @@ ensure
   errfile.unlink
 end
 
-check_curl_output constraints: { out: "Hello World" }
+check_curl_output constraints: { out: "Hello Again World" }
 
 puts "Passed all tests!"
 
