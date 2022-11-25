@@ -79,7 +79,7 @@ ensure
   errfile.unlink
 end
 
-check_curl_output constraints: { out: "Hello From a Library" }
+check_curl_output constraints: { out: "Hello Response", err: "Framework: UltraCool" }
 
 puts "Passed all tests!"
 

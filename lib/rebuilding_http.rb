@@ -40,3 +40,27 @@ class RHTTP::Request
   end
 end
 
+class RHTTP::Response
+  def initialize(body,
+      version: "1.1",
+      status: 200,
+      message: "OK",
+      headers: {})
+    @version = version
+    @status = status
+    @message = message
+    @headers = headers
+    @body = body
+  end
+
+  def to_s
+    <<RESPONSE
+HTTP/#{@version} #{@status} #{@message}\r
+Content-Type: text/html\r
+#{@headers.map {|k,v| "#{k}: #{v}" }.join("\r\n")}
+\r
+#{@body}
+RESPONSE
+  end
+end
+
