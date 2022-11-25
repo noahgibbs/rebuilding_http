@@ -5,8 +5,8 @@ include RHTTP
 server = TCPServer.new 4321
 loop do
   client = server.accept
-  req = RHTTP.read_request(client)
-  puts req
+  req = RHTTP.get_request(client)
+  puts req.inspect
   client.write HELLO_WORLD_RESPONSE
   client.close
 end
