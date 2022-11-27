@@ -81,6 +81,7 @@ end
 
 check_curl_output cmd: "curl http://localhost:4321/", constraints: { out: "Who are you?" }
 check_curl_output cmd: "curl -d who=Bobo http://localhost:4321/", constraints: { out: ["Hello, Bobo", "Request headers"] }
+check_curl_output cmd: "curl -d who=one%2bone http://localhost:4321/", constraints: { out: ["Hello, one+one", "Request headers"] }
 
 puts "Passed all tests!"
 
