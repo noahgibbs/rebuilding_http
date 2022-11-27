@@ -12,7 +12,7 @@ SERVER_PID = fork do
 
     # Replace this process with little_app
     Dir.chdir File.join(__dir__, "..", "blue_eyes")  # Make sure current directory is what we expect
-    exec "ruby -I./lib -rblue_eyes/dsl little_app.rb"
+    exec "ruby -I./lib -rblue_eyes/dsl little_form.rb"
   end
   exit(0)
 end
@@ -79,8 +79,8 @@ ensure
   errfile.unlink
 end
 
-check_curl_output cmd: "curl http://localhost:4321", constraints: { out: "Who are you looking for?" }
-check_curl_output cmd: "curl http://localhost:4321/frank", constraints: { out: "I did it my way..." }
+check_curl_output cmd: "curl http://localhost:4321/", constraints: { out: "Who are you?" }
+check_curl_output cmd: "curl -d who=Bobo http://localhost:4321/", constraints: { out: ["Hello, Bobo", "Request headers"] }
 
 puts "Passed all tests!"
 
