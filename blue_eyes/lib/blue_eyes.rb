@@ -57,11 +57,28 @@ class BlueEyes::Response
   end
 
   def to_s
-    <<RESPONSE
-HTTP/#{@version} #{@status} #{@message}\r
-#{@headers.map {|k,v| "#{k}: #{v}" }.join("\r\n")}
-\r
-#{@body}
-RESPONSE
+    lines = [
+      "HTTP/#{@version} #{@status} #{@message}"
+    ] + @headers.map { |k,v| "#{k}: #{v}" } +
+    [ "", @body, "" ]
+    lines.join("\r\n")
+  end
+end
+
+module BlueEyes::DSL
+  def get(route, &handler)
+    @routes ||= []
+    @routes << [route, handler]
+  end
+
+  def match(url)
+    _, h = @routes.detect { |route, _| url[route] }
+    if h
+      BlueEyes::Response.new(h.call)
+    else
+      BlueEyes::Response.new("",
+        status: 404,
+        message: "No route found")
+    end
   end
 end

@@ -3,16 +3,16 @@
 require "tempfile"
 require "timeout"
 
-MY_SERVER = File.join(__dir__, "..", "my_server.rb")
-
 SERVER_PID = fork do
   # Timeout is terrible for this, except that luckily we just want
   # it to die afterward, which is all Timeout is safe-ish for.
-  Timeout::timeout(3) do
+  Timeout::timeout(5) do
     STDOUT.reopen("/dev/null", "w")
     STDERR.reopen("/dev/null", "w")
-    # This will spin forever, waiting
-    load MY_SERVER
+
+    # Replace this process with little_app
+    Dir.chdir File.join(__dir__, "..", "blue_eyes")  # Make sure current directory is what we expect
+    exec "ruby -I./lib -rblue_eyes/dsl little_app.rb"
   end
   exit(0)
 end
@@ -23,7 +23,7 @@ at_exit do
 end
 
 # Let the server start up
-sleep 0.1
+sleep 0.5
 
 def assert(condition, msg = nil)
   unless condition
@@ -79,7 +79,8 @@ ensure
   errfile.unlink
 end
 
-check_curl_output constraints: { out: "Hello Response", err: "Framework: UltraCool" }
+check_curl_output cmd: "curl http://localhost:4321", constraints: { out: "Who are you looking for?" }
+check_curl_output cmd: "curl http://localhost:4321/frank", constraints: { out: "I did it my way..." }
 
 puts "Passed all tests!"
 
