@@ -139,3 +139,43 @@ module BlueEyes::DSL
     end
   end
 end
+
+class BlueEyes::Server
+  NUM_THREADS=10
+  MAX_WAITING=20
+
+  def initialize(port)
+    @server = TCPServer.new(port)
+    @queue = Thread::Queue.new
+    @pool = (1..NUM_THREADS).map {
+      Thread.new { worker_loop } }
+    @resp_full = BlueEyes::Response.new("",
+      status: 503, message: "Server too busy!")
+  end
+
+  def start
+    loop do
+      client = @server.accept
+      if @queue.num_waiting < MAX_WAITING
+        @queue.push(client)
+      else
+        client.write(@resp_full.to_s)
+        client.close
+      end
+    end
+  end
+
+  def worker_loop
+    loop do
+      client = @queue.pop
+
+      req = BlueEyes::Request.new(client)
+      resp = RUBY_MAIN.match(req)
+      client.write resp.to_s
+      client.close
+    rescue
+      puts "Read error! #{$!.inspect}"
+      next
+    end
+  end
+end
