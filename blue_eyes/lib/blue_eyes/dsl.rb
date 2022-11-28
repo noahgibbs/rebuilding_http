@@ -7,13 +7,6 @@ require_relative "../blue_eyes"
 include BlueEyes::DSL
 
 at_exit do
-    server = TCPServer.new 4321
-    loop do
-      client = server.accept
-      req = BlueEyes::Request.new(client)
-      resp = RUBY_MAIN.match(req)
-      client.write resp.to_s
-      client.close
-    end
+  s = BlueEyes::Server.new(4321)
+  s.start
 end
-
