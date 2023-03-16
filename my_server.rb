@@ -1,19 +1,12 @@
 # my_server.rb
-require 'socket'
-
-RESP = <<TEXT
-HTTP/1.1 200 OK
-Content-Type: text/plain
-
-Hello World!
-TEXT
+require_relative 'lib/rebuilding_http'
+include RHTTP
 
 server = TCPServer.new 4321
 loop do
   client = server.accept
-  puts "Got a connection!"
-  puts client.gets.inspect
-  client.write RESP
+  req = RHTTP.get_request(client)
+  puts req.inspect
+  client.write HELLO_WORLD_RESPONSE
   client.close
 end
-
